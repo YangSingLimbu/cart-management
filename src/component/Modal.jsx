@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { CartState } from "./Context";
 
-const Modal = (props) => {
-  const [count, setCount] = useState(1);
+const Modal = ({ item, closeModal }) => {
+  const {
+    state: { cart },
+    dispatch,
+  } = CartState();
+
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -12,19 +18,9 @@ const Modal = (props) => {
     };
   }, []);
 
-  const handleAdd = () => {
-    setCount(count + 1);
-  };
-
-  const handleSubtract = () => {
-    if (count > 1) {
-      setCount(count - 1);
-    }
-  };
-
   const handleOverlayClick = (e) => {
     if (e.target.classList.contains("overlay")) {
-      props.closeModal();
+      closeModal();
     }
   };
 
@@ -35,10 +31,12 @@ const Modal = (props) => {
     >
       <div className="bg-white w-[500px] h-[550px] py-4 rounded-lg flex flex-col">
         <div className="flex justify-between mb-4 px-2">
-          <h2 className="text-xl font-bold">MMOM MOMOM - $10.00</h2>
+          <h2 className="text-xl font-bold">
+            {item.name} - ${item.price}
+          </h2>
           <button
             className="bg-black bg-opacity-10 rounded-full p-1"
-            onClick={props.closeModal}
+            onClick={closeModal}
           >
             <X />
           </button>
@@ -46,14 +44,8 @@ const Modal = (props) => {
 
         <div className="overflow-y-auto flex-1 px-2">
           <div>
-            <p className="text-base font-normal">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Earu
-            </p>
-            <img
-              className="h-80 mx-auto mt-4"
-              src="https://planetbombay.com/uploads/products/808e95de7f7a3e3e47944394f2992a48.jpg"
-              alt="Product"
-            />
+            <p className="text-base font-normal">{item.description}</p>
+            <img className="h-80 mx-auto mt-4" src={item.image} alt="Product" />
           </div>
           <div className="mt-6">
             <h3 className="text-lg font-semibold">
@@ -71,23 +63,29 @@ const Modal = (props) => {
           <div className="w-[200px] flex justify-between">
             <button
               className="bg-gray-200 text-xl px-2 py-1 rounded hover:bg-gray-50 transition duration-300 w-12"
-              onClick={handleSubtract}
+              onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
             >
               -
             </button>
             <span className="text-xl font-bold bg-gray-200 w-[80px] text-center">
-              {count}
+              {qty}
             </span>
             <button
               className="bg-gray-200 text-xl px-2 py-1 rounded hover:bg-gray-50 transition duration-300 w-12"
-              onClick={handleAdd}
+              onClick={() => setQty(qty + 1)}
             >
               +
             </button>
           </div>
           <button
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-400 transition duration-300"
-            onClick={() => console.log(`Added ${count} items to the cart`)}
+            onClick={() => {
+              closeModal();
+              dispatch({
+                type: "ADD_TO_CART",
+                payload: { ...item, qty },
+              });
+            }}
           >
             Add to Cart
           </button>

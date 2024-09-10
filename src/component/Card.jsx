@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 const Card = (props) => {
   return (
@@ -14,7 +13,7 @@ const Card = (props) => {
           <span className="text-xl font-bold">${props.price}</span>
           <button
             className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300"
-            onClick={props.openModal}
+            onClick={() => props.openModal(props.id)}
           >
             Add to Cart
           </button>
@@ -22,14 +21,6 @@ const Card = (props) => {
       </section>
     </div>
   );
-};
-
-Card.propTypes = {
-  url: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  des: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  openModal: PropTypes.func.isRequired,
 };
 
 export default Card;
